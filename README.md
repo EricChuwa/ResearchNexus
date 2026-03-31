@@ -124,3 +124,22 @@ npm run dev
 ```
 Open http://localhost:3000 to see the app in your browser.
 
+---
+
+## Deployment
+The application makes use of two Nginx webservers that lay behind an HAProxy load balancer. All the trafic is served over HTTPS with automatic HTTP to HTTPS redirection.
+
+#### Infrastructure
+| Server | Role | IP |
+| Web01  | Nginx Web Server | 54.173.55.181 |
+| Web02  | Nginx Web Server | 54.211.203.174 |
+| Lb01   | HAProxy load balancer | 18.208.150.244 |
+
+#### Access Points
+| URL | Description |
+| https://www.crimzonpeak.tech/ | Primary HTTPS via Load Balancer |
+| http://web-01.crimzonpeak.tech/ | Web01 Direct | 
+| http://web-02.crimzonpeak.tech/ | Web02 Direct |
+| lb-01.crimzonpeak.tech          | Lb-01 Direct |
+
+
