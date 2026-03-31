@@ -18,7 +18,12 @@ export async function GET(request) {
 
     // Wikipedia API
     const wikiResponse = await fetch(
-      `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(wikiQuery)}`
+      `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(wikiQuery)}`,
+      {
+        headers: {
+          'User-Agent': 'Synthesis/1.0'
+        }
+      }
     )
 
     if (!wikiResponse.ok) {
