@@ -148,7 +148,7 @@ The application makes use of two Nginx webservers that lay behind an HAProxy loa
 
 ---
 
-# Challenges and How They Were Solved
+## Challenges and How They Were Solved
 
 #### 1. API Key Security In A Frontend App
 **Challenge:** Exposing API keys directly in frontend JavaScript 
@@ -168,7 +168,7 @@ regular expressions, which work in both browser and server environments.
 
 ---
 
-# Credits & Attributions
+## Credits & Attributions
 
 #### APIs & Data Sources
 
