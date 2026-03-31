@@ -140,9 +140,80 @@ The application makes use of two Nginx webservers that lay behind an HAProxy loa
 #### Access Points
 
 | URL | Description |
+|-----|-------------|
 | https://www.crimzonpeak.tech/ | Primary HTTPS via Load Balancer |
 | http://web-01.crimzonpeak.tech/ | Web01 Direct | 
 | http://web-02.crimzonpeak.tech/ | Web02 Direct |
 | lb-01.crimzonpeak.tech          | Lb-01 Direct |
+
+---
+
+# Challenges and How They Were Solved
+
+#### 1. API Key Security In A Frontend App
+**Challenge:** Exposing API keys directly in frontend JavaScript 
+is a security vulnerability, anyone can open DevTools and steal them.
+
+**Solution:** Used Next.js API routes as a server-side proxy layer. 
+All external API calls happen in `app/api/` route handlers where keys 
+are stored as environment variables and never exposed to the browser.
+
+#### 2. DOMParser Not Available In Node.js
+**Challenge:** arXiv returns XML instead of JSON. The browser's 
+`DOMParser` API was used to parse it, but `DOMParser` doesn't 
+exist in Node.js where API routes run.
+
+**Solution:** Replaced DOMParser with manual XML parsing using 
+regular expressions, which work in both browser and server environments.
+
+---
+
+# Credits & Attributions
+
+#### APIs & Data Sources
+
+| Service | Purpose | Documentation |
+|---|---|---|
+| [Wikipedia REST API](https://en.wikipedia.org/api/rest_v1/) | Encyclopedic summaries | https://en.wikipedia.org/api/rest_v1/ |
+| [arXiv API](https://arxiv.org/help/api/) | Academic preprints | https://arxiv.org/help/api/ |
+| [Semantic Scholar API](https://api.semanticscholar.org/) | Peer reviewed papers | https://api.semanticscholar.org/ |
+| [YouTube Data API v3](https://developers.google.com/youtube/v3) | Educational video content | https://developers.google.com/youtube/v3 |
+| [NewsAPI](https://newsapi.org/) | News articles | https://newsapi.org/docs |
+| [Anthropic Claude API](https://docs.anthropic.com/) | AI synthesis, question answering, paper generation, learning paths | https://docs.anthropic.com/ |
+
+#### Frameworks & Libraries
+
+| Library | Purpose | Link |
+|---|---|---|
+| [Next.js](https://nextjs.org/) | Full stack React framework | https://nextjs.org/ |
+| [React](https://react.dev/) | UI component library | https://react.dev/ |
+| [Framer Motion](https://www.framer.com/motion/) | Animations and transitions | https://www.framer.com/motion/ |
+| [Tailwind CSS](https://tailwindcss.com/) | Utility CSS framework | https://tailwindcss.com/ |
+
+#### Infrastructure & Deployment
+
+| Tool | Purpose | Link |
+|---|---|---|
+| [Nginx](https://nginx.org/) | Reverse proxy on web servers | https://nginx.org/ |
+| [HAProxy](https://www.haproxy.org/) | Load balancer with SSL termination | https://www.haproxy.org/ |
+| [PM2](https://pm2.keymetrics.io/) | Node.js process manager | https://pm2.keymetrics.io/ |
+| [Let's Encrypt / Certbot](https://letsencrypt.org/) | Free SSL certificate | https://letsencrypt.org/ |
+| [AWS EC2](https://aws.amazon.com/ec2/) | Cloud server infrastructure | https://aws.amazon.com/ec2/ |
+| [UFW](https://help.ubuntu.com/community/UFW) | Firewall configuration | https://help.ubuntu.com/community/UFW |
+
+### Fonts
+
+| Font | Foundry | Usage |
+|---|---|---|
+| [Georgia](https://docs.microsoft.com/en-us/typography/font-list/georgia) | Microsoft | Display headings and body text |
+| [DM Sans](https://fonts.google.com/specimen/DM+Sans) | Google Fonts | UI labels and interface text |
+
+### Acknowledgements
+
+- **Anthropic** for Claude API access and documentation
+- **Wikipedia Foundation** for their free and open REST API
+- **Allen Institute for AI** for the Semantic Scholar API
+- **Bridge Rwanda** for providing the context and motivation to build a tool that genuinely serves learners
+- All open source contributors whose libraries made this project possible
 
 
