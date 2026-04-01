@@ -169,7 +169,12 @@ export default function Home() {
     try {
       const res  = await fetch('/api/learn', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ concept: trimmed, level: learnLevel, goal: 'general understanding', timeframe: learnTime }),
+        body: JSON.stringify({
+          concept:   trimmed,
+          level:     learnLevel,
+          goal:      'general understanding',
+          timeframe: learnTime,
+        }),
       })
       const data = await res.json()
       timers.forEach(clearTimeout)
@@ -193,7 +198,7 @@ export default function Home() {
     a.click(); URL.revokeObjectURL(url)
   }
 
-  // ── Shared search bar wrapper style ──────────────────────
+  // ── Shared search bar styles ──────────────────────────────
   const searchWrap = {
     display: 'flex', alignItems: 'center',
     backgroundColor: 'rgba(255,255,255,0.05)',
@@ -226,6 +231,20 @@ export default function Home() {
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
     </svg>
   )
+
+  // ── Reusable pill button style ────────────────────────────
+  const pill = (active) => ({
+    padding: '5px 14px', borderRadius: '9999px', fontSize: '11px',
+    letterSpacing: '0.03em', cursor: 'pointer', transition: 'all 0.2s',
+    border: `1px solid ${active ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.1)'}`,
+    backgroundColor: active ? 'rgba(255,255,255,0.1)' : 'transparent',
+    color: active ? '#f0f0ef' : 'rgba(240,240,239,0.35)',
+  })
+
+  const pillLabel = {
+    fontSize: '10px', color: 'rgba(240,240,239,0.25)',
+    letterSpacing: '0.1em', textTransform: 'uppercase', minWidth: '72px',
+  }
 
   // ─────────────────────────────────────────────────────────
   return (
@@ -275,9 +294,10 @@ export default function Home() {
             ))}
           </div>
 
-          {/* Research input */}
+          {/* ── Research input ── */}
           {mode === 'research' && (
-            <form onSubmit={handleAsk} style={{ position: 'relative', width: '100%', maxWidth: '680px' }}>
+            <form onSubmit={handleAsk}
+              style={{ position: 'relative', width: '100%', maxWidth: '680px' }}>
               <div style={searchWrap}
                 onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'}
                 onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'}>
@@ -287,9 +307,11 @@ export default function Home() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                     d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
-                <input type="text" value={question} onChange={e => setQuestion(e.target.value)}
+                <input type="text" value={question}
+                  onChange={e => setQuestion(e.target.value)}
                   onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleAsk() }}}
-                  placeholder="What do you wish to look into?" style={inputStyle} />
+                  placeholder="What do you wish to look into?"
+                  style={inputStyle} />
                 <button type="button" onClick={handleAsk} style={submitBtn(loading)}>
                   {loading ? spinner : arrow}
                 </button>
@@ -297,10 +319,13 @@ export default function Home() {
             </form>
           )}
 
-          {/* Learn input */}
+          {/* ── Learn input ── */}
           {mode === 'learn' && (
             <div style={{ width: '100%', maxWidth: '680px' }}>
-              <form onSubmit={handleLearn} style={{ position: 'relative', marginBottom: '12px' }}>
+
+              {/* Search bar */}
+              <form onSubmit={handleLearn}
+                style={{ position: 'relative', marginBottom: '16px' }}>
                 <div style={searchWrap}
                   onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'}
                   onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'}>
@@ -310,45 +335,62 @@ export default function Home() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                       d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                   </svg>
-                  <input type="text" value={concept} onChange={e => setConcept(e.target.value)}
+                  <input type="text" value={concept}
+                    onChange={e => setConcept(e.target.value)}
                     onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleLearn() }}}
-                    placeholder="What do you want to understand?" style={inputStyle} />
+                    placeholder="What do you want to understand?"
+                    style={inputStyle} />
                   <button type="button" onClick={handleLearn} style={submitBtn(learnLoading)}>
                     {learnLoading ? spinner : arrow}
                   </button>
                 </div>
               </form>
 
-              {/* Level + time pills */}
-              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                {['beginner', 'intermediate', 'advanced'].map(l => (
-                  <button key={l} onClick={() => setLearnLevel(l)} style={{
-                    padding: '5px 14px', borderRadius: '9999px', fontSize: '11px',
-                    textTransform: 'capitalize', letterSpacing: '0.03em', cursor: 'pointer',
-                    border: `1px solid ${learnLevel === l ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.1)'}`,
-                    backgroundColor: learnLevel === l ? 'rgba(255,255,255,0.1)' : 'transparent',
-                    color: learnLevel === l ? '#f0f0ef' : 'rgba(240,240,239,0.35)',
-                    transition: 'all 0.2s',
-                  }}>{l}</button>
-                ))}
-                <div style={{ width: '1px', backgroundColor: 'rgba(255,255,255,0.1)', margin: '0 4px' }} />
-                {['1 week', '1 month', '3 months'].map(t => (
-                  <button key={t} onClick={() => setLearnTime(t)} style={{
-                    padding: '5px 14px', borderRadius: '9999px', fontSize: '11px',
-                    letterSpacing: '0.03em', cursor: 'pointer',
-                    border: `1px solid ${learnTime === t ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.1)'}`,
-                    backgroundColor: learnTime === t ? 'rgba(255,255,255,0.1)' : 'transparent',
-                    color: learnTime === t ? '#f0f0ef' : 'rgba(240,240,239,0.35)',
-                    transition: 'all 0.2s',
-                  }}>{t}</button>
-                ))}
+              {/* Customise your path section */}
+              <div style={{ padding: '16px 20px', borderRadius: '14px',
+                border: '1px solid rgba(255,255,255,0.07)',
+                backgroundColor: 'rgba(255,255,255,0.02)' }}>
+
+                <p style={{ fontSize: '10px', letterSpacing: '0.15em',
+                  textTransform: 'uppercase', color: 'rgba(240,240,239,0.3)',
+                  marginBottom: '14px' }}>
+                  Customise your path
+                </p>
+
+                {/* Level row */}
+                <div style={{ display: 'flex', alignItems: 'center',
+                  gap: '12px', marginBottom: '10px' }}>
+                  <span style={pillLabel}>Level</span>
+                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                    {['beginner', 'intermediate', 'advanced'].map(l => (
+                      <button key={l} onClick={() => setLearnLevel(l)}
+                        style={{ ...pill(learnLevel === l), textTransform: 'capitalize' }}>
+                        {l}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Duration row */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <span style={pillLabel}>Duration</span>
+                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                    {['1 week', '1 month', '3 months'].map(t => (
+                      <button key={t} onClick={() => setLearnTime(t)}
+                        style={pill(learnTime === t)}>
+                        {t}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
           )}
 
           {/* Subtitle — only on empty state */}
           {!isActive && (
-            <div style={{ marginTop: '18px', fontSize: '13px', color: 'rgba(240,240,239,0.28)' }}>
+            <div style={{ marginTop: '18px', fontSize: '13px',
+              color: 'rgba(240,240,239,0.28)' }}>
               {mode === 'research'
                 ? 'Aggregating knowledge from across the sphere'
                 : 'Build a personalised learning path for any concept'}
@@ -356,12 +398,15 @@ export default function Home() {
           )}
         </div>
 
+
         {/* ── Research output ── */}
         {mode === 'research' && loading && (
-          <StagePanel stages={RESEARCH_STAGES} current={stage} title="Researching your question" />
+          <StagePanel stages={RESEARCH_STAGES} current={stage}
+            title="Researching your question" />
         )}
         {mode === 'research' && error && !loading && (
-          <div style={{ textAlign: 'center', padding: '60px 0', color: 'rgba(240,240,239,0.4)' }}>
+          <div style={{ textAlign: 'center', padding: '60px 0',
+            color: 'rgba(240,240,239,0.4)' }}>
             <p style={{ fontSize: '18px', fontFamily: 'Georgia, serif', marginBottom: '8px' }}>
               Failed to find an answer
             </p>
@@ -373,9 +418,11 @@ export default function Home() {
             style={{ paddingBottom: '80px' }}>
 
             {/* Question echo */}
-            <p style={{ fontSize: '13px', color: 'rgba(240,240,239,0.35)', marginBottom: '20px', fontWeight: 300 }}>
+            <p style={{ fontSize: '13px', color: 'rgba(240,240,239,0.35)',
+              marginBottom: '20px', fontWeight: 300 }}>
               You asked:{' '}
-              <em style={{ fontFamily: 'Georgia, serif', color: 'rgba(240,240,239,0.7)', fontStyle: 'italic' }}>
+              <em style={{ fontFamily: 'Georgia, serif',
+                color: 'rgba(240,240,239,0.7)', fontStyle: 'italic' }}>
                 "{submitted}"
               </em>
             </p>
@@ -388,8 +435,9 @@ export default function Home() {
                   Researched:
                 </span>
                 {result.components.map((c, i) => (
-                  <span key={i} style={{ fontSize: '11px', padding: '2px 10px', borderRadius: '9999px',
-                    border: '1px solid rgba(255,255,255,0.08)', color: 'rgba(240,240,239,0.35)' }}>
+                  <span key={i} style={{ fontSize: '11px', padding: '2px 10px',
+                    borderRadius: '9999px', border: '1px solid rgba(255,255,255,0.08)',
+                    color: 'rgba(240,240,239,0.35)' }}>
                     {c}
                   </span>
                 ))}
@@ -401,32 +449,44 @@ export default function Home() {
               border: '1px solid rgba(255,255,255,0.1)',
               backgroundColor: 'rgba(255,255,255,0.03)', marginBottom: '16px' }}>
 
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '18px' }}>
+              <div style={{ display: 'flex', alignItems: 'center',
+                justifyContent: 'space-between', marginBottom: '18px' }}>
                 <span style={{ fontSize: '11px', fontWeight: 500, letterSpacing: '0.1em',
                   textTransform: 'uppercase', color: 'rgba(16,185,129,0.8)' }}>
                   Research Answer
                 </span>
                 <button onClick={() => navigator.clipboard.writeText(result.answer)}
-                  style={{ fontSize: '11px', color: 'rgba(240,240,239,0.3)', background: 'none',
-                    border: 'none', cursor: 'pointer' }}>
+                  style={{ fontSize: '11px', color: 'rgba(240,240,239,0.3)',
+                    background: 'none', border: 'none', cursor: 'pointer' }}>
                   Copy
                 </button>
               </div>
 
               <p style={{ fontSize: '15px', lineHeight: 1.85, color: 'rgba(240,240,239,0.8)',
-                fontWeight: 300, fontFamily: "Georgia, 'Times New Roman', serif", whiteSpace: 'pre-wrap' }}>
+                fontWeight: 300, fontFamily: "Georgia, 'Times New Roman', serif",
+                whiteSpace: 'pre-wrap' }}>
                 {result.answer}
               </p>
 
               {/* Action buttons */}
               <div style={{ display: 'flex', gap: '10px', marginTop: '20px',
-                paddingTop: '16px', borderTop: '1px solid rgba(255,255,255,0.06)', flexWrap: 'wrap' }}>
+                paddingTop: '16px', borderTop: '1px solid rgba(255,255,255,0.06)',
+                flexWrap: 'wrap' }}>
                 {[
-                  { label: `${showSources ? 'Hide' : 'View'} ${result.sources.length} Sources`, onClick: () => setShowSources(s => !s), active: showSources },
-                  ...(!paperResult ? [{ label: 'Write Paper', onClick: () => setPaperModal(true), active: false }] : []),
+                  {
+                    label: `${showSources ? 'Hide' : 'View'} ${result.sources.length} Sources`,
+                    onClick: () => setShowSources(s => !s),
+                    active: showSources
+                  },
+                  ...(!paperResult ? [{
+                    label: 'Write Paper',
+                    onClick: () => setPaperModal(true),
+                    active: false
+                  }] : []),
                 ].map(btn => (
                   <button key={btn.label} onClick={btn.onClick} style={{
-                    padding: '8px 16px', borderRadius: '9999px', fontSize: '12px', cursor: 'pointer',
+                    padding: '8px 16px', borderRadius: '9999px', fontSize: '12px',
+                    cursor: 'pointer',
                     border: `1px solid ${btn.active ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.12)'}`,
                     backgroundColor: btn.active ? 'rgba(255,255,255,0.08)' : 'transparent',
                     color: 'rgba(240,240,239,0.6)', transition: 'all 0.2s',
@@ -442,12 +502,14 @@ export default function Home() {
               {showSources && (
                 <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 8 }} style={{ marginBottom: '24px' }}>
-                  <p style={{ fontSize: '10px', letterSpacing: '0.15em', textTransform: 'uppercase',
-                    color: 'rgba(255,255,255,0.25)', marginBottom: '12px' }}>
+                  <p style={{ fontSize: '10px', letterSpacing: '0.15em',
+                    textTransform: 'uppercase', color: 'rgba(255,255,255,0.25)',
+                    marginBottom: '12px' }}>
                     Sources — ranked by relevance
                   </p>
                   <div style={{ display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '12px' }}>
+                    gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
+                    gap: '12px' }}>
                     {result.sources.map(s => <SourceCard key={s.number} source={s} />)}
                   </div>
                 </motion.div>
@@ -456,7 +518,8 @@ export default function Home() {
 
             {/* Paper loading */}
             {paperLoading && (
-              <StagePanel stages={PAPER_STAGES} current={paperStage} title="Writing your paper" />
+              <StagePanel stages={PAPER_STAGES} current={paperStage}
+                title="Writing your paper" />
             )}
 
             {/* Paper result */}
@@ -465,28 +528,36 @@ export default function Home() {
                 border: '1px solid rgba(255,255,255,0.1)',
                 backgroundColor: 'rgba(255,255,255,0.03)', marginBottom: '24px' }}>
 
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                  marginBottom: '20px', paddingBottom: '16px',
-                  borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+                <div style={{ display: 'flex', alignItems: 'center',
+                  justifyContent: 'space-between', marginBottom: '20px',
+                  paddingBottom: '16px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
                   <span style={{ fontSize: '11px', fontWeight: 500, letterSpacing: '0.1em',
                     textTransform: 'uppercase', color: 'rgba(16,185,129,0.8)' }}>
                     {paperType === 'essay' ? 'Academic Essay' : 'Research Paper'}
                   </span>
                   <div style={{ display: 'flex', gap: '12px' }}>
                     <button onClick={() => navigator.clipboard.writeText(paperResult.paper)}
-                      style={{ fontSize: '11px', color: 'rgba(240,240,239,0.3)', background: 'none',
-                        border: 'none', cursor: 'pointer' }}>Copy</button>
+                      style={{ fontSize: '11px', color: 'rgba(240,240,239,0.3)',
+                        background: 'none', border: 'none', cursor: 'pointer' }}>
+                      Copy
+                    </button>
                     <button onClick={() => {
                       const blob = new Blob([paperResult.paper], { type: 'text/plain' })
                       const url  = URL.createObjectURL(blob)
                       const a    = document.createElement('a')
-                      a.href = url; a.download = `${submitted}-${paperType}.txt`; a.click()
+                      a.href = url
+                      a.download = `${submitted}-${paperType}.txt`
+                      a.click()
                       URL.revokeObjectURL(url)
-                    }} style={{ fontSize: '11px', color: 'rgba(240,240,239,0.3)', background: 'none',
-                      border: 'none', cursor: 'pointer' }}>Download</button>
+                    }} style={{ fontSize: '11px', color: 'rgba(240,240,239,0.3)',
+                      background: 'none', border: 'none', cursor: 'pointer' }}>
+                      Download
+                    </button>
                     <button onClick={() => setPaperResult(null)}
-                      style={{ background: 'none', border: 'none', color: 'rgba(240,240,239,0.25)',
-                        cursor: 'pointer', fontSize: '16px' }}>×</button>
+                      style={{ background: 'none', border: 'none',
+                        color: 'rgba(240,240,239,0.25)', cursor: 'pointer', fontSize: '16px' }}>
+                      ×
+                    </button>
                   </div>
                 </div>
 
@@ -497,8 +568,9 @@ export default function Home() {
                 </div>
 
                 <button onClick={() => setShowPaperSrc(s => !s)}
-                  style={{ marginTop: '16px', fontSize: '11px', color: 'rgba(240,240,239,0.28)',
-                    background: 'none', border: 'none', cursor: 'pointer' }}>
+                  style={{ marginTop: '16px', fontSize: '11px',
+                    color: 'rgba(240,240,239,0.28)', background: 'none',
+                    border: 'none', cursor: 'pointer' }}>
                   {showPaperSrc ? 'Hide' : 'View'} {paperResult.sources?.length} sources used
                 </button>
 
@@ -509,20 +581,26 @@ export default function Home() {
                         style={{ display: 'flex', gap: '10px', padding: '10px 0',
                           borderBottom: '1px solid rgba(255,255,255,0.05)',
                           textDecoration: 'none', color: 'inherit' }}>
-                        <span style={{ fontSize: '10px', color: 'rgba(240,240,239,0.3)', minWidth: '20px' }}>
+                        <span style={{ fontSize: '10px', color: 'rgba(240,240,239,0.3)',
+                          minWidth: '20px' }}>
                           [{s.number}]
                         </span>
                         <div>
-                          <p style={{ fontSize: '12px', color: '#f0f0ef', marginBottom: '3px' }}>{s.title}</p>
+                          <p style={{ fontSize: '12px', color: '#f0f0ef', marginBottom: '3px' }}>
+                            {s.title}
+                          </p>
                           <span style={{ fontSize: '10px', color: 'rgba(240,240,239,0.25)',
-                            textTransform: 'uppercase' }}>{s.source}</span>
+                            textTransform: 'uppercase' }}>
+                            {s.source}
+                          </span>
                         </div>
                       </a>
                     ))}
                   </div>
                 )}
 
-                <p style={{ marginTop: '16px', fontSize: '10px', color: 'rgba(240,240,239,0.15)' }}>
+                <p style={{ marginTop: '16px', fontSize: '10px',
+                  color: 'rgba(240,240,239,0.15)' }}>
                   Generated by Synthesis AI — not for direct submission.
                 </p>
               </div>
@@ -530,13 +608,18 @@ export default function Home() {
           </motion.div>
         )}
 
+
         {/* ── Learn output ── */}
         {mode === 'learn' && learnLoading && (
-          <StagePanel stages={LEARN_STAGES} current={learnStage} title="Building your learning path" />
+          <StagePanel stages={LEARN_STAGES} current={learnStage}
+            title="Building your learning path" />
         )}
         {mode === 'learn' && learnError && !learnLoading && (
-          <div style={{ textAlign: 'center', padding: '60px 0', color: 'rgba(240,240,239,0.4)' }}>
-            <p style={{ fontSize: '18px', fontFamily: 'Georgia, serif' }}>Failed to generate path</p>
+          <div style={{ textAlign: 'center', padding: '60px 0',
+            color: 'rgba(240,240,239,0.4)' }}>
+            <p style={{ fontSize: '18px', fontFamily: 'Georgia, serif' }}>
+              Failed to generate path
+            </p>
             <p style={{ fontSize: '13px', marginTop: '8px' }}>{learnError}</p>
           </div>
         )}
@@ -548,8 +631,9 @@ export default function Home() {
             <div style={{ padding: '24px 28px', borderRadius: '16px',
               border: '1px solid rgba(255,255,255,0.1)',
               backgroundColor: 'rgba(255,255,255,0.03)', marginBottom: '16px' }}>
-              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
-                flexWrap: 'wrap', gap: '12px', marginBottom: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start',
+                justifyContent: 'space-between', flexWrap: 'wrap',
+                gap: '12px', marginBottom: '16px' }}>
                 <div>
                   <h2 style={{ fontFamily: "Georgia, serif", fontSize: '22px',
                     fontWeight: 400, color: '#f0f0ef', marginBottom: '6px' }}>
@@ -559,14 +643,16 @@ export default function Home() {
                     {learnResult.level} · {learnResult.estimatedTime}
                   </p>
                 </div>
-                <button onClick={downloadPath} style={{ display: 'flex', alignItems: 'center', gap: '8px',
-                  padding: '10px 20px', borderRadius: '9999px', backgroundColor: '#f0f0ef',
-                  color: '#080808', border: 'none', cursor: 'pointer', fontSize: '12px', fontWeight: 500 }}>
+                <button onClick={downloadPath} style={{ display: 'flex', alignItems: 'center',
+                  gap: '8px', padding: '10px 20px', borderRadius: '9999px',
+                  backgroundColor: '#f0f0ef', color: '#080808', border: 'none',
+                  cursor: 'pointer', fontSize: '12px', fontWeight: 500 }}>
                   Download Path
                 </button>
               </div>
               <p style={{ fontSize: '14px', lineHeight: 1.7, color: 'rgba(240,240,239,0.6)',
-                fontWeight: 300, paddingTop: '16px', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+                fontWeight: 300, paddingTop: '16px',
+                borderTop: '1px solid rgba(255,255,255,0.06)' }}>
                 {learnResult.overview}
               </p>
             </div>
@@ -591,7 +677,8 @@ export default function Home() {
             {learnResult.stages[expandedStage] && (() => {
               const s = learnResult.stages[expandedStage]
               return (
-                <motion.div key={expandedStage} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+                <motion.div key={expandedStage}
+                  initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
                   style={{ padding: '24px 28px', borderRadius: '16px',
                     border: '1px solid rgba(255,255,255,0.1)',
                     backgroundColor: 'rgba(255,255,255,0.03)', marginBottom: '16px' }}>
@@ -600,8 +687,9 @@ export default function Home() {
                   <div style={{ display: 'flex', alignItems: 'center',
                     justifyContent: 'space-between', marginBottom: '16px' }}>
                     <div>
-                      <p style={{ fontSize: '10px', letterSpacing: '0.15em', textTransform: 'uppercase',
-                        color: 'rgba(240,240,239,0.3)', marginBottom: '6px' }}>
+                      <p style={{ fontSize: '10px', letterSpacing: '0.15em',
+                        textTransform: 'uppercase', color: 'rgba(240,240,239,0.3)',
+                        marginBottom: '6px' }}>
                         Stage {s.number} of {learnResult.stages.length} · {s.duration}
                       </p>
                       <h3 style={{ fontFamily: "Georgia, serif", fontSize: '20px',
@@ -610,17 +698,19 @@ export default function Home() {
                     <div style={{ display: 'flex', gap: '8px' }}>
                       {expandedStage > 0 && (
                         <button onClick={() => setExpandedStage(i => i - 1)} style={{
-                          width: '32px', height: '32px', borderRadius: '50%', cursor: 'pointer',
-                          border: '1px solid rgba(255,255,255,0.1)', backgroundColor: 'transparent',
-                          color: 'rgba(240,240,239,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        }}>←</button>
+                          width: '32px', height: '32px', borderRadius: '50%',
+                          border: '1px solid rgba(255,255,255,0.1)',
+                          backgroundColor: 'transparent', color: 'rgba(240,240,239,0.4)',
+                          cursor: 'pointer', display: 'flex', alignItems: 'center',
+                          justifyContent: 'center' }}>←</button>
                       )}
                       {expandedStage < learnResult.stages.length - 1 && (
                         <button onClick={() => setExpandedStage(i => i + 1)} style={{
-                          width: '32px', height: '32px', borderRadius: '50%', cursor: 'pointer',
-                          border: '1px solid rgba(255,255,255,0.1)', backgroundColor: 'transparent',
-                          color: 'rgba(240,240,239,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        }}>→</button>
+                          width: '32px', height: '32px', borderRadius: '50%',
+                          border: '1px solid rgba(255,255,255,0.1)',
+                          backgroundColor: 'transparent', color: 'rgba(240,240,239,0.4)',
+                          cursor: 'pointer', display: 'flex', alignItems: 'center',
+                          justifyContent: 'center' }}>→</button>
                       )}
                     </div>
                   </div>
@@ -632,7 +722,8 @@ export default function Home() {
                   {/* Analogy */}
                   {s.analogy && (
                     <div style={{ padding: '12px 16px', borderRadius: '10px', marginBottom: '10px',
-                      backgroundColor: 'rgba(16,185,129,0.05)', border: '1px solid rgba(16,185,129,0.15)' }}>
+                      backgroundColor: 'rgba(16,185,129,0.05)',
+                      border: '1px solid rgba(16,185,129,0.15)' }}>
                       <p style={{ fontSize: '12px', color: 'rgba(16,185,129,0.7)',
                         letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '6px' }}>
                         Think of it like this
@@ -645,7 +736,8 @@ export default function Home() {
                   {/* Common mistake */}
                   {s.commonMistake && (
                     <div style={{ padding: '12px 16px', borderRadius: '10px', marginBottom: '20px',
-                      backgroundColor: 'rgba(251,191,36,0.05)', border: '1px solid rgba(251,191,36,0.15)' }}>
+                      backgroundColor: 'rgba(251,191,36,0.05)',
+                      border: '1px solid rgba(251,191,36,0.15)' }}>
                       <p style={{ fontSize: '12px', color: 'rgba(251,191,36,0.7)',
                         letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '6px' }}>
                         Common mistake
@@ -658,11 +750,15 @@ export default function Home() {
                   {/* Resources */}
                   {s.resources?.length > 0 && (
                     <div style={{ marginBottom: '20px' }}>
-                      <p style={{ fontSize: '10px', letterSpacing: '0.15em', textTransform: 'uppercase',
-                        color: 'rgba(240,240,239,0.25)', marginBottom: '12px' }}>Start here</p>
+                      <p style={{ fontSize: '10px', letterSpacing: '0.15em',
+                        textTransform: 'uppercase', color: 'rgba(240,240,239,0.25)',
+                        marginBottom: '12px' }}>Start here</p>
                       <div style={{ display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '10px' }}>
-                        {s.resources.map((r, i) => <SourceCard key={i} source={{ ...r, number: i + 1 }} compact />)}
+                        gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
+                        gap: '10px' }}>
+                        {s.resources.map((r, i) => (
+                          <SourceCard key={i} source={{ ...r, number: i + 1 }} compact />
+                        ))}
                       </div>
                     </div>
                   )}
@@ -670,11 +766,14 @@ export default function Home() {
                   {/* Concept check */}
                   {s.conceptCheck && (
                     <div style={{ padding: '16px 20px', borderRadius: '12px',
-                      backgroundColor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}>
-                      <p style={{ fontSize: '10px', letterSpacing: '0.15em', textTransform: 'uppercase',
-                        color: 'rgba(240,240,239,0.3)', marginBottom: '8px' }}>Ready for next stage?</p>
-                      <p style={{ fontSize: '14px', color: 'rgba(240,240,239,0.7)', lineHeight: 1.6,
-                        fontWeight: 300, fontFamily: "Georgia, serif", fontStyle: 'italic' }}>
+                      backgroundColor: 'rgba(255,255,255,0.03)',
+                      border: '1px solid rgba(255,255,255,0.08)' }}>
+                      <p style={{ fontSize: '10px', letterSpacing: '0.15em',
+                        textTransform: 'uppercase', color: 'rgba(240,240,239,0.3)',
+                        marginBottom: '8px' }}>Ready for next stage?</p>
+                      <p style={{ fontSize: '14px', color: 'rgba(240,240,239,0.7)',
+                        lineHeight: 1.6, fontWeight: 300,
+                        fontFamily: "Georgia, serif", fontStyle: 'italic' }}>
                         "{s.conceptCheck}"
                       </p>
                     </div>
@@ -699,7 +798,9 @@ export default function Home() {
               maxWidth: '420px', margin: '0 16px' }}>
 
             <h2 style={{ fontFamily: "Georgia, serif", fontSize: '22px',
-              fontWeight: 400, color: '#f0f0ef', marginBottom: '6px' }}>Write a Paper</h2>
+              fontWeight: 400, color: '#f0f0ef', marginBottom: '6px' }}>
+              Write a Paper
+            </h2>
             <p style={{ fontSize: '13px', color: 'rgba(240,240,239,0.35)',
               marginBottom: '28px', fontWeight: 300 }}>
               based on "{submitted.length > 45 ? submitted.slice(0, 45) + '...' : submitted}"
@@ -715,7 +816,9 @@ export default function Home() {
                   border: `1px solid ${paperType === type ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.1)'}`,
                   backgroundColor: paperType === type ? 'rgba(255,255,255,0.1)' : 'transparent',
                   color: paperType === type ? '#f0f0ef' : 'rgba(240,240,239,0.35)',
-                  transition: 'all 0.2s' }}>{type}</button>
+                  transition: 'all 0.2s' }}>
+                  {type}
+                </button>
               ))}
             </div>
 
@@ -724,11 +827,14 @@ export default function Home() {
             <div style={{ display: 'flex', gap: '8px', marginBottom: '32px' }}>
               {[500, 1000, 2000].map(count => (
                 <button key={count} onClick={() => setPaperWords(count)} style={{
-                  flex: 1, padding: '10px', borderRadius: '10px', fontSize: '12px', cursor: 'pointer',
+                  flex: 1, padding: '10px', borderRadius: '10px', fontSize: '12px',
+                  cursor: 'pointer',
                   border: `1px solid ${paperWords === count ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.1)'}`,
                   backgroundColor: paperWords === count ? 'rgba(255,255,255,0.1)' : 'transparent',
                   color: paperWords === count ? '#f0f0ef' : 'rgba(240,240,239,0.35)',
-                  transition: 'all 0.2s' }}>{count.toLocaleString()}w</button>
+                  transition: 'all 0.2s' }}>
+                  {count.toLocaleString()}w
+                </button>
               ))}
             </div>
 
@@ -745,12 +851,13 @@ export default function Home() {
 }
 
 // ── Stage Panel ───────────────────────────────────────────────
-// Reusable loading animation shown during all API calls
+// Reusable loading animation for all API calls
 function StagePanel({ stages, current, title }) {
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
       style={{ padding: '24px 28px', borderRadius: '16px', marginBottom: '32px',
-        border: '1px solid rgba(255,255,255,0.08)', backgroundColor: 'rgba(255,255,255,0.02)' }}>
+        border: '1px solid rgba(255,255,255,0.08)',
+        backgroundColor: 'rgba(255,255,255,0.02)' }}>
       <p style={{ fontSize: '10px', letterSpacing: '0.15em', textTransform: 'uppercase',
         color: 'rgba(255,255,255,0.3)', marginBottom: '18px' }}>{title}</p>
       {stages.map((s, i) => (
@@ -759,7 +866,8 @@ function StagePanel({ stages, current, title }) {
           <div style={{ width: '20px', height: '20px', borderRadius: '50%', flexShrink: 0,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             border: i < current ? '1px solid rgba(16,185,129,0.5)'
-              : i === current ? '1px solid rgba(255,255,255,0.3)' : '1px solid rgba(255,255,255,0.08)',
+              : i === current ? '1px solid rgba(255,255,255,0.3)'
+              : '1px solid rgba(255,255,255,0.08)',
             backgroundColor: i < current ? 'rgba(16,185,129,0.15)' : 'transparent' }}>
             {i < current ? (
               <svg width="10" height="10" fill="none" stroke="rgba(16,185,129,0.9)" viewBox="0 0 24 24">
@@ -783,8 +891,7 @@ function StagePanel({ stages, current, title }) {
 }
 
 // ── Source Card ───────────────────────────────────────────────
-// Used in research sources grid and learn resources grid
-// compact prop reduces size for learning path stage resources
+// compact prop removes thumbnail for tighter layouts
 function SourceCard({ source, compact }) {
   const color  = getColor(source.source)
   const hasImg = !!source.thumbnail && !compact
@@ -798,18 +905,21 @@ function SourceCard({ source, compact }) {
         transition: 'border-color 0.2s, transform 0.2s' }}
       onMouseEnter={e => {
         e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)'
-        e.currentTarget.style.transform = 'translateY(-2px)'
+        e.currentTarget.style.transform   = 'translateY(-2px)'
       }}
       onMouseLeave={e => {
         e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)'
-        e.currentTarget.style.transform = 'translateY(0)'
+        e.currentTarget.style.transform   = 'translateY(0)'
       }}>
 
       {hasImg && (
         <div style={{ position: 'relative', height: '140px', overflow: 'hidden' }}>
           <img src={source.thumbnail} alt={source.title}
             style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-            onError={e => { e.target.style.display = 'none'; e.target.parentNode.style.display = 'none' }} />
+            onError={e => {
+              e.target.style.display = 'none'
+              e.target.parentNode.style.display = 'none'
+            }} />
           <div style={{ position: 'absolute', inset: 0,
             background: 'linear-gradient(to top, rgba(8,8,8,0.9) 0%, transparent 60%)' }} />
         </div>
@@ -817,10 +927,13 @@ function SourceCard({ source, compact }) {
 
       <div style={{ padding: compact ? '12px 14px' : '14px 16px 16px',
         marginTop: hasImg ? '-24px' : '0', position: 'relative' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+
+        <div style={{ display: 'flex', alignItems: 'center',
+          justifyContent: 'space-between', marginBottom: '8px' }}>
           <span style={{ fontSize: '9px', fontWeight: 500, letterSpacing: '0.08em',
             textTransform: 'uppercase', padding: '2px 8px', borderRadius: '9999px',
-            border: `1px solid ${color.border}`, backgroundColor: color.bg, color: color.text }}>
+            border: `1px solid ${color.border}`,
+            backgroundColor: color.bg, color: color.text }}>
             {source.source}
           </span>
           {source.score && (
@@ -832,21 +945,29 @@ function SourceCard({ source, compact }) {
         </div>
 
         <p style={{ fontSize: compact ? '12px' : '13px', fontWeight: 400, color: '#f0f0ef',
-          lineHeight: 1.4, marginBottom: '6px',
-          display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+          lineHeight: 1.4, marginBottom: '6px', display: '-webkit-box',
+          WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
           {source.title}
         </p>
 
         {source.description && !compact && (
-          <p style={{ fontSize: '11px', color: 'rgba(240,240,239,0.4)', lineHeight: 1.6, fontWeight: 300,
-            display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+          <p style={{ fontSize: '11px', color: 'rgba(240,240,239,0.4)', lineHeight: 1.6,
+            fontWeight: 300, display: '-webkit-box', WebkitLineClamp: 3,
+            WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
             {source.description}
           </p>
         )}
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
-          {source.date && <span style={{ fontSize: '10px', color: 'rgba(240,240,239,0.2)' }}>{source.date}</span>}
-          <span style={{ fontSize: '11px', color: 'rgba(240,240,239,0.15)', marginLeft: 'auto' }}>→</span>
+        <div style={{ display: 'flex', justifyContent: 'space-between',
+          alignItems: 'center', marginTop: '10px' }}>
+          {source.date && (
+            <span style={{ fontSize: '10px', color: 'rgba(240,240,239,0.2)' }}>
+              {source.date}
+            </span>
+          )}
+          <span style={{ fontSize: '11px', color: 'rgba(240,240,239,0.15)', marginLeft: 'auto' }}>
+            →
+          </span>
         </div>
       </div>
     </a>

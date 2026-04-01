@@ -15,7 +15,7 @@ const dmSans = DM_Sans({
 
 export const metadata = {
   title: 'Synthesis',
-  description: 'Aggregating knowledge from across the sphere',
+  description: 'Gathering knowledge from across the sphere',
 }
 
 export default function RootLayout({ children }) {
