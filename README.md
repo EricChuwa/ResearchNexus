@@ -6,8 +6,8 @@ Synthesis is an AI-powered research and learning intelligence engine. It breaks 
 
 It also generates personalised learning paths for any concept, helping students and developers go from curiosity to competence with a structured progression, real resources, and plain-language explanations at every stage.
 
-Live at → [www.crimzonpeak.tech](https://www.crimzonpeak.tech)
-
+Live at :: [www.crimzonpeak.tech](https://www.crimzonpeak.tech)
+Demo Video :: https://youtu.be/jOzSKMjEe4Y
 ---
 
 ## What Makes It Different
