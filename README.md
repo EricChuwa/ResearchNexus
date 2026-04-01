@@ -1,4 +1,4 @@
-# Synthesis
+# Research Nexus :: Synthesis
 
 **Ask anything. Understand everything.**
 
