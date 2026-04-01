@@ -333,3 +333,9 @@ curl -sI https://www.crimzonpeak.tech | grep X-Served-By
 - **Allen Institute for AI** for the Semantic Scholar API
 - **Bridge Rwanda** for providing the context and motivation to build a tool that genuinely serves learners
 - All open source contributors whose libraries made this project possible
+
+---
+
+## Authors Note:
+
+This was a very interesting project to build. Though I feel that I could do better. In this project, I attempted to use Next.js as my front end because it was an attempt to not only practice it, but also I wanted to use its routing functions to make the api-key handling safer. The process was really cool, especially when it came to data handling. I learnt how to build data normalizers as well as getting a better understanding of how to handle different data sources. A good example was the xml response that I got from arXiv. After research I found out that I needed to use a DOMParser, but that doesn't exist in Next.js so I had to use regular expressions to manually extract the data. Though I wish I could have gotten more time, I learnt a lot from the experience.
