@@ -35,8 +35,8 @@ Enter any concept you want to understand. Select your level (beginner, intermedi
 ### Source Scoring
 Every source is scored before being passed to Claude using three weighted criteria:
 - **Relevance** (50%) — how closely the source matches the query
-- **Recency** (30%) — how recent the source is
-- **Credibility** (20%) — source type weighted by academic rigour
+- **Recency** (20%) — how recent the source is
+- **Credibility** (30%) — source type weighted by academic rigour
 
 In research mode, academic sources score highest. In learn mode, YouTube and Wikipedia score highest because beginners need accessible content, not research papers.
 
