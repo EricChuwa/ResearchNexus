@@ -62,7 +62,7 @@ Requirements:
 - Cite inline as [1], [2]
 - Undergraduate academic level
 - Plain prose only — no markdown, no bullet points
-- End with a References section
+- End with a References section in APA7 Format listing the cited sources
 - Focus specifically on: "${query}"`
         }]
       })
