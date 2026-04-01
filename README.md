@@ -1,170 +1,295 @@
-# ResearchNexus 
-**Search less. Understand more. Synthesized for you.**
+# Synthesis
 
-ResearchNexus is an intelligent research engine that aggregates and synthesizes information from multiple high-quality sources into a single, structured output. Instead of jumping between tabs, users can search any topic and instantly receive curated insights drawn from academic papers, encyclopedic knowledge, and multimedia content.
+**Ask anything. Understand everything.**
 
-Powered by multi-source APIs and an AI synthesis layer via Anthropic’s Claude, ResearchNexus transforms raw information into **coherent, decision-ready understanding**.
+Synthesis is an AI-powered research and learning intelligence engine. It breaks down any question into targeted search components, pulls information simultaneously from five high-quality sources, scores each result for relevance and credibility, and returns a direct structured answer — not a list of links.
 
-Hosted Live at :: www.crimzonpeak.tech
-Demo Video :: 
+It also generates personalised learning paths for any concept, helping students and developers go from curiosity to competence with a structured progression, real resources, and plain-language explanations at every stage.
 
---- 
-## Why Synthesis Exists
+Live at → [www.crimzonpeak.tech](https://www.crimzonpeak.tech)
 
-Modern research is inefficient by design.
+---
 
-You search a topic and end up:
-- Opening 15+ tabs
-- Skimming incomplette or redundant information
-- Struggling to connect insights across sources
+## What Makes It Different
 
-What should be a **thinking process** becomes a **navigation problem**.
+Most research tools find information. Synthesis **understands your question**.
 
-For a student exploring Machine Learning, a developer researching a new framework, or a founder validating an idea—this friction compounds quickly.
+When you ask *"Why does buoyancy act differently in water and oil?"* Synthesis does not search those exact words. It breaks the question into components — fluid density, Archimedes principle, viscosity differences — searches each component independently, scores every result for recency and credibility, then uses Claude to formulate a direct answer citing only sources it actually found.
 
-**The problem is not lack of information. It is lack of synthesis.**
+Unlike ChatGPT or Perplexity, every citation is real and verifiable. Unlike Google Scholar, it searches across five source types simultaneously and answers in plain language. Unlike Notion or Obsidian, you do not need to organise anything.
 
-ResearchNexus is built to close that gap.
---- 
+---
 
-## How it Works
+## Features
 
-You enter a topic. One input.
+### Research Mode
+Ask any question in natural language. Synthesis breaks it into 3–4 targeted search queries, searches all sources simultaneously, scores results, and returns a structured answer with inline citations. From the answer you can view the source cards or generate a paper.
 
-In seconds, ResearchNexus:
+### Paper Generation
+From any research result, generate a 500, 1000, or 2000 word academic essay or research paper. The paper uses only real sources that were found during your search — no hallucinated citations.
 
-- Pulls structured knowledge from **Wikipedia**
-- Fetches relevant academic papers from **arXiv**
-- Extracts research insights from **Semantic Scholar**
-- Surfaces explanatory and educational content from **YouTube**
-- Aggregates everything into a unified dataset
-- Sends the compiled context to Claude AI
-- Returns a refined, structured synthesis of the topic
+### Learn Mode
+Enter any concept you want to understand. Select your level (beginner, intermediate, advanced) and your available time (1 week, 1 month, 3 months). Synthesis generates a 4-stage learning path with plain-language explanations, real-world analogies, common mistakes to avoid, curated resources per stage, and a concept check question at each stage. The full path is downloadable as a PDF.
 
-Allowing you to navigate the sources all in one place. The output is not just information it is **understanding**.
+### Source Scoring
+Every source is scored before being passed to Claude using three weighted criteria:
+- **Relevance** (50%) — how closely the source matches the query
+- **Recency** (30%) — how recent the source is
+- **Credibility** (20%) — source type weighted by academic rigour
+
+In research mode, academic sources score highest. In learn mode, YouTube and Wikipedia score highest because beginners need accessible content, not research papers.
+
 ---
 
 ## Tech Stack
-Built with a lightweight, execution-focused architecture
 
-| Layer        | Technology |
-|--------------|------------|
-| Frontend     | Next.js, Tailwind CSS |
-| AI Layer     | Claude API (Anthropic) |
-| Hosting      | Nginx on Ubuntu 22.04 |
-| Load Balancing | HAProxy with round-robin distribution |
-| SSL          | Certbot |
-| Data Sources (APIs) | Wikipedia API, arXiv API, Semantic Scholar API, YouTube Data API |
+| Layer | Technology |
+|---|---|
+| Framework | Next.js 14 (App Router) |
+| Frontend | React, Framer Motion, inline CSS |
+| AI Layer | Claude API (Anthropic) — claude-sonnet-4-20250514 |
+| Web Servers | Nginx on Ubuntu 22.04 (Web01 + Web02) |
+| Load Balancer | HAProxy with SSL termination |
+| SSL | Let's Encrypt via Certbot |
+| Process Manager | PM2 |
+| Firewall | UFW |
 
 ---
 
-## APIs 
+## APIs
 
-| API | What It Does |
-|-----|-------------|
-| Wikipedia API | Retrieves foundational topic knowledge |
-| arXiv API | Fetches academic research papers |
-| Semantic Scholar API | Provides structured research insights and metadata |
-| YouTube Data API | Returns relevant educational video content |
-| Claude API | Synthesizes all collected data into structured insights |
+| API | Purpose | Mode |
+|---|---|---|
+| [Wikipedia REST API](https://en.wikipedia.org/api/rest_v1/) | Encyclopedic summaries | Research + Learn |
+| [arXiv API](https://arxiv.org/help/api/) | Academic preprints | Research |
+| [Semantic Scholar API](https://api.semanticscholar.org/) | Peer reviewed papers | Research |
+| [YouTube Data API v3](https://developers.google.com/youtube/v3) | Educational video content | Research + Learn |
+| [NewsAPI](https://newsapi.org/docs) | News and articles | Research |
+| [Anthropic Claude API](https://docs.anthropic.com/) | Question answering, synthesis, paper generation, learning paths | All |
 
-All API interactions are designed to:
-- Handle failures gracefully  
-- Maintain usability even under partial data availability  
+All APIs are called server-side. No key is ever exposed to the browser.
 
 ---
 
 ## Project Structure
-
-``` 
-NEXUS/
+```
+nexus/
 ├── app/
 │   ├── api/
 │   │   ├── search/
-│   │   │   └── route.js        # API route for handling topic search
+│   │   │   └── route.js        # Keyword search endpoint (used by UI)
+│   │   ├── question/
+│   │   │   └── route.js        # Question answering — breaks query, searches, answers
+│   │   ├── paper/
+│   │   │   └── route.js        # Academic paper generation
+│   │   ├── learn/
+│   │   │   └── route.js        # Learning path generation
 │   │   └── synthesize/
-│   │       └── route.js        # API route for AI synthesis with Claude
+│   │       └── route.js        # Legacy synthesis endpoint
+│   ├── lib/
+│   │   └── fetchSources.js     # Shared fetch + scoring utility used by all routes
 │   ├── favicon.ico
-│   ├── globals.css             # Global styles
-│   ├── layout.js               # Layout component for pages
-│   └── page.js                 # Main page component
-├── public/                     # Static assets (images, icons, etc.)
-├── .gitignore                  # Files to exclude from git
-├── eslint.config.mjs           # ESLint configuration
-├── jsconfig.json               # JS path resolution and aliases
-├── next.config.mjs             # Next.js configuration
-├── package.json                # Project dependencies and scripts
-├── package-lock.json           # Lock file for npm
-├── postcss.config.mjs          # PostCSS configuration
-└── README.md                   # This file
+│   ├── globals.css
+│   ├── layout.js
+│   └── page.js                 # Main UI — Research mode + Learn mode
+├── .env.local                  # API keys (not committed)
+├── .gitignore
+├── next.config.mjs
+├── package.json
+└── README.md
 ```
 
 ---
 
 ## Running Locally
 
-#### Clone Repo
-```
+#### 1. Clone the repository
+```bash
 git clone https://github.com/EricChuwa/ResearchNexus.git
-cd ResearchNexus
+cd ResearchNexus/nexus
 ```
-#### Install dependencies
-```
+
+#### 2. Install dependencies
+```bash
 npm install
 ```
-#### create .env.local file
+
+#### 3. Create `.env.local`
+
+Create a file called `.env.local` in the `nexus/` folder with the following:
 ```
-CLAUDE_API_KEY=your_claude_key
+ANTHROPIC_API_KEY=your_anthropic_key
 YOUTUBE_API_KEY=your_youtube_key
-SEMANTIC_SCHOLAR_API_KEY=your_semantic_scholar_key
+NEWS_API_KEY=your_newsapi_key
+SEMANTIC_SCHOLAR_KEY=your_semantic_scholar_key
 ```
-#### Run the development sever
-```
+
+Key registration links:
+- Anthropic → https://console.anthropic.com
+- YouTube Data API v3 → https://console.cloud.google.com
+- NewsAPI → https://newsapi.org/register
+- Semantic Scholar → https://api.semanticscholar.org/product/api
+
+Wikipedia and arXiv require no API keys.
+
+#### 4. Run the development server
+```bash
 npm run dev
 ```
-Open http://localhost:3000 to see the app in your browser.
+
+Open http://localhost:3000 in your browser.
 
 ---
 
 ## Deployment
-The application makes use of two Nginx webservers that lay behind an HAProxy load balancer. All the trafic is served over HTTPS with automatic HTTP to HTTPS redirection.
+
+The application runs on two Nginx web servers behind an HAProxy load balancer. All traffic is served over HTTPS with automatic HTTP to HTTPS redirection. Traffic is distributed between both servers using round-robin load balancing.
 
 #### Infrastructure
 
 | Server | Role | IP |
-|--------|------|----|
-| Web01  | Nginx Web Server | 54.173.55.181 |
-| Web02  | Nginx Web Server | 54.211.203.174 |
-| Lb01   | HAProxy load balancer | 18.208.150.244 |
+|---|---|---|
+| Web01 | Nginx reverse proxy → Next.js on port 3000 | 54.173.55.181 |
+| Web02 | Nginx reverse proxy → Next.js on port 3000 | 54.211.203.174 |
+| Lb01 | HAProxy load balancer + SSL termination | 18.208.150.244 |
 
 #### Access Points
 
 | URL | Description |
-|-----|-------------|
-| https://www.crimzonpeak.tech/ | Primary HTTPS via Load Balancer |
-| http://web-01.crimzonpeak.tech/ | Web01 Direct | 
-| http://web-02.crimzonpeak.tech/ | Web02 Direct |
-| lb-01.crimzonpeak.tech          | Lb-01 Direct |
+|---|---|
+| https://www.crimzonpeak.tech | Primary — HTTPS via load balancer |
+| http://web-01.crimzonpeak.tech | Web01 direct |
+| http://web-02.crimzonpeak.tech | Web02 direct |
+
+#### Deploying To A New Server
+```bash
+# SSH into the server
+ssh ubuntu@YOUR_SERVER_IP
+
+# Install Node.js 20
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt-get install -y nodejs
+
+# Install PM2
+sudo npm install -g pm2
+
+# Clone the repository
+git clone https://github.com/EricChuwa/ResearchNexus.git
+cd ResearchNexus/nexus
+
+# Install dependencies
+npm install
+
+# Create environment variables
+nano .env.local
+# Add all four API keys
+
+# Build and start
+npm run build
+pm2 start npm --name "synthesis" -- start
+pm2 save
+
+# Install and configure Nginx
+sudo apt install nginx -y
+sudo nano /etc/nginx/sites-available/synthesis
+```
+
+Nginx config for each web server:
+```nginx
+server {
+    listen 80;
+    server_name _;
+
+    location / {
+        proxy_pass http://localhost:3000;
+        add_header X-Served-By "web-01";
+    }
+}
+```
+```bash
+sudo ln -s /etc/nginx/sites-available/synthesis /etc/nginx/sites-enabled/
+sudo rm /etc/nginx/sites-enabled/default
+sudo nginx -t
+sudo service nginx restart
+```
+
+#### Configuring The Load Balancer
+```bash
+sudo apt install haproxy -y
+
+# Obtain SSL certificate
+sudo certbot certonly --standalone -d www.yourdomain.tech
+
+# Combine certificate files
+sudo cat /etc/letsencrypt/live/www.yourdomain.tech/fullchain.pem \
+    /etc/letsencrypt/live/www.yourdomain.tech/privkey.pem \
+    | sudo tee /etc/ssl/private/www.yourdomain.tech.pem
+```
+
+HAProxy config (`/etc/haproxy/haproxy.cfg`):
+```haproxy
+global
+    tune.ssl.default-dh-param 2048
+
+defaults
+    mode http
+    timeout connect 5000
+    timeout client  50000
+    timeout server  50000
+
+frontend www_https
+    bind *:443 ssl crt /etc/ssl/private/www.yourdomain.tech.pem
+    default_backend web_servers
+
+frontend www_http
+    bind *:80
+    redirect scheme https code 301 if !{ ssl_fc }
+
+backend web_servers
+    balance roundrobin
+    server web-01 54.173.55.181:80 check
+    server web-02 54.211.203.174:80 check
+```
+
+#### Verifying Load Balancer Traffic Distribution
+```bash
+curl -sI https://www.crimzonpeak.tech | grep X-Served-By
+# Run multiple times to see it alternate between web-01 and web-02
+```
 
 ---
 
-## Challenges and How They Were Solved
+## Challenges & How I Overcame Them
 
-#### 1. API Key Security In A Frontend App
-**Challenge:** Exposing API keys directly in frontend JavaScript 
-is a security vulnerability, anyone can open DevTools and steal them.
+#### 1. API Key Security In A Frontend Application
+**Challenge:** Exposing API keys directly in frontend JavaScript means anyone can open DevTools and steal them.
 
-**Solution:** Used Next.js API routes as a server-side proxy layer. 
-All external API calls happen in `app/api/` route handlers where keys 
-are stored as environment variables and never exposed to the browser.
+**Solution:** Used Next.js API routes as a server-side proxy. All external API calls happen inside `app/api/` route handlers where keys are stored as environment variables. The browser only ever calls `/api/question` — it never touches Wikipedia, YouTube, or Claude directly.
 
 #### 2. DOMParser Not Available In Node.js
-**Challenge:** arXiv returns XML instead of JSON. The browser's 
-`DOMParser` API was used to parse it, but `DOMParser` doesn't 
-exist in Node.js where API routes run.
+**Challenge:** arXiv returns XML instead of JSON. The browser's `DOMParser` API was the obvious solution — but it doesn't exist in Node.js where API routes run.
 
-**Solution:** Replaced DOMParser with manual XML parsing using 
-regular expressions, which work in both browser and server environments.
+**Solution:** Replaced DOMParser with manual XML parsing using regular expressions, which work in both browser and server environments.
+
+#### 4. Internal HTTP Calls Failing On Deployment
+**Challenge:** The question and paper routes initially called `/api/search` internally via HTTP fetch. On the deployed server this returned an HTML error page instead of JSON, silently breaking both features.
+
+**Solution:** Extracted all fetch logic into a shared utility (`app/lib/fetchSources.js`) and imported it directly into each route that needed it, eliminating the internal HTTP dependency entirely.
+
+#### 5. Rate Limiting Across Multiple APIs
+**Challenge:** Repeatedly calling Wikipedia, arXiv, and Semantic Scholar during development triggered 429 rate limit errors.
+
+**Solution:** Added a `User-Agent` header to Wikipedia requests as required by their API policy. Registered for a Semantic Scholar API key for higher limits. Added `Promise.allSettled` so a single rate-limited API doesn't fail the entire request.
+
+#### 6. HAProxy SSL Termination Certificate Format
+**Challenge:** HAProxy requires a single combined `.pem` file containing both the certificate chain and private key. The Let's Encrypt documentation does not make this obvious.
+
+**Solution:** Used `cat` to concatenate `fullchain.pem` and `privkey.pem` into a single file that HAProxy could read for SSL termination.
+
+#### 7. Data Normalization Across Five APIs
+**Challenge:** Every API returns data in a completely different shape. Wikipedia uses `extract`, arXiv uses `summary`, Semantic Scholar uses `abstract`, YouTube nests everything under `snippet`.
+
+**Solution:** Built a `normalize()` function in the shared fetch utility that maps every possible field name into one consistent shape before data touches the UI. The frontend never needs to know which API a result came from.
 
 ---
 
@@ -188,9 +313,9 @@ regular expressions, which work in both browser and server environments.
 | [Next.js](https://nextjs.org/) | Full stack React framework | https://nextjs.org/ |
 | [React](https://react.dev/) | UI component library | https://react.dev/ |
 | [Framer Motion](https://www.framer.com/motion/) | Animations and transitions | https://www.framer.com/motion/ |
-| [Tailwind CSS](https://tailwindcss.com/) | Utility CSS framework | https://tailwindcss.com/ |
+| [jsPDF](https://github.com/parallax/jsPDF) | Client-side PDF generation | https://github.com/parallax/jsPDF |
 
-#### Infrastructure & Deployment
+#### Infrastructure
 
 | Tool | Purpose | Link |
 |---|---|---|
@@ -201,19 +326,10 @@ regular expressions, which work in both browser and server environments.
 | [AWS EC2](https://aws.amazon.com/ec2/) | Cloud server infrastructure | https://aws.amazon.com/ec2/ |
 | [UFW](https://help.ubuntu.com/community/UFW) | Firewall configuration | https://help.ubuntu.com/community/UFW |
 
-### Fonts
-
-| Font | Foundry | Usage |
-|---|---|---|
-| [Georgia](https://docs.microsoft.com/en-us/typography/font-list/georgia) | Microsoft | Display headings and body text |
-| [DM Sans](https://fonts.google.com/specimen/DM+Sans) | Google Fonts | UI labels and interface text |
-
-### Acknowledgements
+#### Acknowledgements
 
 - **Anthropic** for Claude API access and documentation
 - **Wikipedia Foundation** for their free and open REST API
 - **Allen Institute for AI** for the Semantic Scholar API
 - **Bridge Rwanda** for providing the context and motivation to build a tool that genuinely serves learners
 - All open source contributors whose libraries made this project possible
-
-
